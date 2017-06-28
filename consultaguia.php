@@ -15,7 +15,7 @@ $conexion = mysqli_connect($servidor, $usuario, $password) or die("No se ha podi
 $db = mysqli_select_db($conexion, $basededatos) or die("Upps! Pues va a ser que no se ha podido conectar a la base de datos");
 
 // establecer y realizar consulta. guardamos en variable.
-$consulta = "SELECT Guia as guias FROM guias WHERE IdDespacho = " . $despacho;
+$consulta = "SELECT Guia as guia FROM guias WHERE IdDespacho = " . $despacho . " AND Entregada = 0";
 $resultado = mysqli_query($conexion, $consulta) or die("Algo ha ido mal en la consulta a la base de datos");
 $arrGuias = array();    
 while ($columna = mysqli_fetch_array( $resultado )) {
