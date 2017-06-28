@@ -1,7 +1,8 @@
 <?php
 
-$despacho = $_REQUEST['despacho'];
-
+$guia = $_REQUEST['guia'];
+$fechaEntrega = $_REQUEST['fecha'];
+$horaEntrega = $_REQUEST['hora'];
 $usuario = "root";
 $password = "70143086";
 //$servidor = "181.49.169.98";
@@ -15,14 +16,12 @@ $conexion = mysqli_connect($servidor, $usuario, $password) or die("No se ha podi
 $db = mysqli_select_db($conexion, $basededatos) or die("Upps! Pues va a ser que no se ha podido conectar a la base de datos");
 
 // establecer y realizar consulta. guardamos en variable.
-$consulta = "SELECT Guia as guia FROM guias WHERE IdDespacho = " . $despacho . " AND Entregada = 0";
+$consulta = "UPDATE guias SET Entregada = 1, FhEntregaMercancia = '" . $fechaEntrega . " " . $horaEntrega . "' WHERE Guia = " . $guia;
 $resultado = mysqli_query($conexion, $consulta) or die("Algo ha ido mal en la consulta a la base de datos");
-$arrGuias = array();    
-while ($columna = mysqli_fetch_array( $resultado )) {
-    $arrGuias[] = array('guia' => $columna['guia']);
+$estado = 1;
+if (!$resultado) {  
+    $estado = 2;
 }
-$datos = array('estado' => 1, 'guias' => $arrGuias);
-
+$datos = array('estado' => $estado);
 echo json_encode($datos);
-
 mysqli_close( $conexion );
