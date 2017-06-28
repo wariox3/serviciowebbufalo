@@ -16,8 +16,8 @@ $conexion = mysqli_connect($servidor, $usuario, $password) or die("No se ha podi
 $db = mysqli_select_db($conexion, $basededatos) or die("Upps! Pues va a ser que no se ha podido conectar a la base de datos");
 
 // establecer y realizar consulta. guardamos en variable.
-$consulta = "UPDATE guias SET Entregada = 1, FhEntregaMercancia = '" . $fechaEntrega . " " . $horaEntrega . "' WHERE Guia = " . $guia;
-$resultado = mysqli_query($conexion, $consulta) or die("Algo ha ido mal en la consulta a la base de datos");
+$consulta = "UPDATE guia SET Entregada = 1, FhEntregaMercancia = '" . $fechaEntrega . " " . $horaEntrega . "' WHERE Guia = " . $guia;
+$resultado = mysqli_query($conexion, $consulta) or die(json_encode(array('estado' => 2)));
 $estado = 1;
 if (!$resultado) {  
     $estado = 2;
