@@ -3,10 +3,11 @@
 $guia = $_REQUEST['guia'];
 $fechaEntrega = $_REQUEST['fecha'];
 $horaEntrega = $_REQUEST['hora'];
+$usuarioEntrega = $_REQUEST['usuario'];
 $usuario = "root";
 $password = "70143086";
 $servidor = "181.49.169.98";
-$servidor = "192.168.1.104";
+//$servidor = "192.168.1.104";
 $basededatos = "bdkl";
 
 // creación de la conexión a la base de datos con mysql_connect()
@@ -21,6 +22,9 @@ $resultado = mysqli_query($conexion, $consulta) or die(json_encode(array('estado
 $estado = 1;
 if (!$resultado) {  
     $estado = 2;
+} else {
+    $consulta = "INSERT INTO log_guias (fecha, Guia, IdAccionLog, IdUsuario, app_usuario) VALUES (now(), " . $guia . ", 10, 1, '" . $usuarioEntrega . "')";
+    $resultado = mysqli_query($conexion, $consulta);    
 }
 $datos = array('estado' => $estado);
 echo json_encode($datos);
