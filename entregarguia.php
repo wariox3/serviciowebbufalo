@@ -7,7 +7,7 @@ $usuarioEntrega = $_REQUEST['usuario'];
 $usuario = "root";
 $password = "70143086";
 $servidor = "181.49.169.98";
-//$servidor = "192.168.1.104";
+$servidor = "192.168.1.104";
 $basededatos = "bdkl";
 
 // creación de la conexión a la base de datos con mysql_connect()
