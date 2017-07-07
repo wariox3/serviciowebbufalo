@@ -13,6 +13,7 @@ $conexion = mysqli_connect($servidor, $usuario, $password) or die("No se ha podi
 
 // Selección del a base de datos a utilizar
 $db = mysqli_select_db($conexion, $basededatos) or die("Upps! Pues va a ser que no se ha podido conectar a la base de datos");
+/*
 $arrDatos = array('estadoRecibida' => 0, 'fechaEntrada' => '', 'estadoReparto' => 0, 'estadoEntregada' => 0, 'fechaEntrega' => '', 'estadoCumplida' => 0);
 
 // establecer y realizar consulta. guardamos en variable.
@@ -35,5 +36,6 @@ if($arGuia) {
 }
 
 echo json_encode($arrDatos);
-
+*/
+echo json_encode("hola mundo");
 mysqli_close( $conexion );
