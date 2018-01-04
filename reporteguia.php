@@ -18,7 +18,7 @@ $conexion = mysqli_connect($servidor, $usuario, $password) or die("No se ha podi
 $db = mysqli_select_db($conexion, $basededatos) or die("Upps! Pues va a ser que no se ha podido conectar a la base de datos");
 
 // establecer y realizar consulta. guardamos en variable.
-$consulta = "SELECT Guia, DATE_FORMAT(FhEntradaBodega, '%Y-%m-%d') as FhEntradaBodega, DocCliente, NmDestinatario, Unidades, VrFlete, VrManejo, VrDeclarado, EnNovedad, Entregada, destino.NmCiudad as CiudadDestino, KilosFacturados "
+$consulta = "SELECT Guia, DATE_FORMAT(FhEntradaBodega, '%Y-%m-%d') as FhEntradaBodega, DATE_FORMAT(FhEntregaMercancia, '%Y-%m-%d') as FhEntrega, DocCliente, NmDestinatario, Unidades, VrFlete, VrManejo, VrDeclarado, EnNovedad, Entregada, destino.NmCiudad as CiudadDestino, KilosFacturados "
         . "FROM guias "
         . "LEFT JOIN ciudades as destino ON guias.IdCiuDestino = destino.IdCiudad "
         . "WHERE Cuenta = $empresa AND FhEntradaBodega BETWEEN '$fechaDesde 00:00' AND '$fechaHasta 23:59'";
@@ -38,7 +38,8 @@ while ($columna = mysqli_fetch_array( $resultado )) {
         'EnNovedad' => $columna['EnNovedad'],
         'Entregada' => $columna['Entregada'],
         'CiudadDestino' => utf8_decode($columna['CiudadDestino']),
-        'KilosFacturados' => $columna['KilosFacturados']
+        'KilosFacturados' => $columna['KilosFacturados'],
+        'FhEntrega' => $columna['FhEntrega'],
         );
 }
 $datos = array('estado' => 1, 'guias' => $arrGuias);
