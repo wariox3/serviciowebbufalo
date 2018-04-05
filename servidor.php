@@ -28,6 +28,23 @@ $server->register("getEstadoGuia",
         return $respuesta;
     }
 
+$server->register("getCrearGuia",
+    array("parametro" => "xsd:string"),
+    array("return" => "xsd:string"),
+    "urn:administracion", "urn:administracion#getCrearGuia", "rpc", "encoded", "Crear");
+
+function getCrearGuia($parametro) {
+    //http://php.net/manual/es/simplexml.examples-basic.php
+    //https://diego.com.es/tutorial-de-simplexml
+    $respuesta = "";
+    if($xml = simplexml_load_string($parametro)) {
+        $respuesta = "Guias creadas correctamente";
+    } else {
+        $respuesta = "No se pudo cargar xml";
+    }
+    return $respuesta;
+}
+
     if (!isset($HTTP_RAW_POST_DATA))
         $HTTP_RAW_POST_DATA = file_get_contents('php://input');
     

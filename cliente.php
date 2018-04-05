@@ -10,6 +10,12 @@ if ($error) {
 
 //Crea la variable $xmlstr para enviar por parametro
 include 'xml/prueba.php';
+include 'xml/guia.php';
+
+$elementos = new SimpleXMLElement($xmlguia);
+$respuesta = "".$elementos->guia[0]->codigo;
+
+
 
 $result = $cliente->call("getPrueba",
     array("parametro" => "Mario Estrada"));

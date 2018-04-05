@@ -7,14 +7,18 @@ $error = $cliente->getError();
 if ($error) {
     echo "<h2>Constructor error</h2><pre>" . $error . "</pre>";
 }
-
-//Crea la variable $xmlstr para enviar por parametro
-include 'xml/prueba.php';
-
+//include 'xml/guia.php';
+//$parametro = $xmlguia;
+/*https://diego.com.es/tutorial-de-simplexml
 $parametro = $_POST['parametro'];
-$result = $cliente->call("getPrueba",
+$elementos = new SimpleXMLElement($parametro);
+$xml = simplexml_load_string($parametro);
+foreach ($xml as $guia){
+    echo 'Guia: '.$guia->consecutivo.'<br>';
+}*/
+$parametro = $_POST['parametro'];
+$result = $cliente->call("getCrearGuia",
     array("parametro" => $parametro));
-
 
 if ($cliente->fault) {
     echo "<h2>Fault</h2><pre>";
