@@ -1,7 +1,7 @@
 <?php
 //require_once "conexionkit.php";
 require_once "nusoap/lib/nusoap.php";
-$cliente = new nusoap_client("http://localhost/serviciowebbufalo/servidor.php");
+$cliente = new nusoap_client("http://localhost:8081/serviciowebbufalo/servidor.php");
 
 $error = $cliente->getError();
 if ($error) {
