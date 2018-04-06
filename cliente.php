@@ -1,5 +1,5 @@
 <?php
-require_once "conexionkit.php";
+//require_once "conexionkit.php";
 require_once "nusoap/lib/nusoap.php";
 $cliente = new nusoap_client("http://localhost/serviciowebbufalo/servidor.php");
 
@@ -8,7 +8,7 @@ if ($error) {
     echo "<h2>Constructor error</h2><pre>" . $error . "</pre>";
 }
 
-$servidor = conectar();
+//$servidor = conectar();
 //Crea la variable $xmlstr para enviar por parametro
 include 'xml/prueba.php';
 include 'xml/guia.php';
