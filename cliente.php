@@ -13,7 +13,7 @@ $servidor = conectar();
 include 'xml/prueba.php';
 include 'xml/guia.php';
 
-$error = "";
+/*$error = "";
 $xml = simplexml_load_string($xmlguia);
 //Validar
 foreach ($xml as $guia){
@@ -45,7 +45,7 @@ if($error == "") {
     }
 } else {
     echo $error . "<br/>";
-}
+}*/
 
 
 
