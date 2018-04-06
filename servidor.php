@@ -1,7 +1,7 @@
 <?php
 //https://www.developer.com/lang/php/consuming-web-services-with-php-using-nusoap.html
 require_once "nusoap/lib/nusoap.php";
-//require_once "conexionkit.php";
+require_once "conexionkit.php";
 $server = new soap_server();
 $server->configureWSDL("funcionesKit", "urn:funciones");
 
