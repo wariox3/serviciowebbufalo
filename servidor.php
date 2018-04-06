@@ -36,11 +36,41 @@ $server->register("getCrearGuia",
 function getCrearGuia($parametro) {
     //http://php.net/manual/es/simplexml.examples-basic.php
     //https://diego.com.es/tutorial-de-simplexml
+    $servidor = conectar();
     $respuesta = "";
-    if($xml = simplexml_load_string($parametro)) {
-        $respuesta = "Guias creadas correctamente";
+    $error = "";
+    $xml = simplexml_load_string($parametro);
+    //Validar
+    foreach ($xml as $guia){
+        if(!validarGuia($servidor, $guia->consecutivo)) {
+            $error = "La guia " . $guia->consecutivo . " ya existe y no se puede volver a crear";
+            break;
+        }
+    }
+    if($error == "") {
+        foreach ($xml as $guia){
+            $sql = "INSERT INTO guias (CreadoWs, Guia, CR, Remitente, IdCliente, DocCliente, NmDestinatario, DirDestinatario,
+                TelDestinatario, FhEntradaBodega, VrDeclarado, VrFlete, VrManejo, Unidades, KilosReales, KilosFacturados,
+                KilosVolumen, Estado, IdFactura, Observaciones, COIng, Cuenta, Cliente, Recaudo,GuiaTipo, TipoCobro
+                ) VALUE (1, ".$guia->consecutivo.", ".$guia->operacion.", '".$guia->remitente."',".$guia->operacion.",
+                '".$guia->documento."','".$guia->destinatario."','".$guia->direccion."','".$guia->telefono."', now(),
+                ".$guia->declarado.", ".$guia->flete.",".$guia->manejo.",".$guia->unidades.",
+                ".$guia->pesoreal.",".$guia->pesoreal.",".$guia->pesovolumen.", 'I', 0,'".$guia->comentario."',
+                ".$guia->operacion.", '".$guia->nit."', '".$guia->razonsocial."', ".$guia->recaudo.", ".$guia->tipoguia.",
+                ".$guia->tipocobro." 
+                )";
+            if (!$resultado = $servidor->query($sql)) {
+                $error = "Se presento un error insertando la guia " . $guia->consecutivo . " Error:" . $servidor->error ." Sql:". $sql;
+                break;
+            }
+        }
+        if($error == "") {
+            $respuesta = "Guias creadas con exito";
+        } else {
+            $respuesta = $error;
+        }
     } else {
-        $respuesta = "No se pudo cargar xml";
+        $respuesta = $error;
     }
     return $respuesta;
 }
