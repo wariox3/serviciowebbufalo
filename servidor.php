@@ -51,13 +51,13 @@ function getCrearGuia($parametro) {
         foreach ($xml as $guia){
             $sql = "INSERT INTO guias (CreadoWs, Guia, CR, Remitente, IdCliente, DocCliente, NmDestinatario, DirDestinatario,
                 TelDestinatario, FhEntradaBodega, VrDeclarado, VrFlete, VrManejo, Unidades, KilosReales, KilosFacturados,
-                KilosVolumen, Estado, IdFactura, Observaciones, COIng, Cuenta, Cliente, Recaudo,GuiaTipo, TipoCobro
+                KilosVolumen, Estado, IdFactura, Observaciones, COIng, Cuenta, Cliente, Recaudo,GuiaTipo, TipoCobro, CodigoBarrasCliente
                 ) VALUE (1, ".$guia->consecutivo.", ".$guia->operacion.", '".$guia->remitente."',".$guia->operacion.",
                 '".$guia->documento."','".$guia->destinatario."','".$guia->direccion."','".$guia->telefono."', now(),
                 ".$guia->declarado.", ".$guia->flete.",".$guia->manejo.",".$guia->unidades.",
                 ".$guia->pesoreal.",".$guia->pesoreal.",".$guia->pesovolumen.", 'I', 0,'".$guia->comentario."',
                 ".$guia->operacion.", '".$guia->nit."', '".$guia->razonsocial."', ".$guia->recaudo.", ".$guia->tipoguia.",
-                ".$guia->tipocobro." 
+                ".$guia->tipocobro.", '".$guia->cbarra."' 
                 )";
             if (!$resultado = $servidor->query($sql)) {
                 $error = "Se presento un error insertando la guia " . $guia->consecutivo . " Error:" . $servidor->error ." Sql:". $sql;

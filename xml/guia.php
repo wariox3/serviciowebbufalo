@@ -25,6 +25,7 @@ $xmlguia = <<<XML
   <flete>35000</flete>
   <manejo>2500</manejo>
   <recaudo>0</recaudo>
+  <cbarra>BG00000002541</cbarra>
  </guia>
 </guias>
 XML;
