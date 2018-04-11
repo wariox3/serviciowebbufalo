@@ -31,7 +31,7 @@ $server->register("getEstadoGuia",
 $server->register("getCrearGuia",
     array("parametro" => "xsd:string"),
     array("return" => "xsd:string"),
-    "urn:administracion", "urn:administracion#getCrearGuia", "rpc", "encoded", "Crear");
+    "urn:administracion", "urn:administracion#getCrearGuia", "rpc", "encoded", "CrearGuia");
 
 function getCrearGuia($parametro) {
     //http://php.net/manual/es/simplexml.examples-basic.php
@@ -72,6 +72,40 @@ function getCrearGuia($parametro) {
     } else {
         $respuesta = $error;
     }
+    return $respuesta;
+}
+
+$server->register("getCrearRecogida",
+    array("parametro" => "xsd:string"),
+    array("return" => "xsd:string"),
+    "urn:administracion", "urn:administracion#getCrearRecogida", "rpc", "encoded", "CrearRecogida");
+
+function getCrearRecogida($parametro) {
+    $servidor = conectar();
+    $respuesta = "";
+    $error = "";
+    $xml = simplexml_load_string($parametro);
+    foreach ($xml as $recogida){
+        $consecutivo = consecutivo($servidor, "Anuncios");
+        $sql = "INSERT INTO anuncios (CreadoWs, IdAnuncio, IdCliente, Anunciante, DirAnunciante, TelAnunciante, FhAnuncio, 
+            FhRecogida, Unidades, KilosReales, KilosVol, comentarios, Coperaciones, Estado, Programada, Efectiva, Orden, IdEmpresa
+            ) VALUE (1, ".$consecutivo.",".$recogida->nit.", '".$recogida->anunciante."', '".$recogida->direccion."',
+            '".$recogida->telefono."', now(),'".$recogida->fecha."',".$recogida->unidades.",".$recogida->pesoreal.", ".$recogida->pesovolumen.",
+            '".$recogida->comentarios."', ".$recogida->operacion.", 'D', 0, 0, 0, 1 
+            )";
+        if (!$resultado = $servidor->query($sql)) {
+            $error = "Se presento un error insertando la recogida, Error:" . $servidor->error ." Sql:". $sql;
+            break;
+        } else {
+            incrementarConsecutivo($servidor, "Anuncios");
+        }
+    }
+    if($error == "") {
+        $respuesta = "Recogidas creadas con exito";
+    } else {
+        $respuesta = $error;
+    }
+
     return $respuesta;
 }
 

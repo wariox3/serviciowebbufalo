@@ -2,23 +2,24 @@
 
 require_once "nusoap/lib/nusoap.php";
 $cliente = new nusoap_client("http://localhost:8081/serviciowebbufalo/servidor.php");
+//$cliente = new nusoap_client("http://localhost/serviciowebbufalo/servidor.php"); //Pruebas
 
 $error = $cliente->getError();
 if ($error) {
     echo "<h2>Constructor error</h2><pre>" . $error . "</pre>";
 }
-//include 'xml/guia.php';
-//$parametro = $xmlguia;
-/*https://diego.com.es/tutorial-de-simplexml
+
 $parametro = $_POST['parametro'];
-$elementos = new SimpleXMLElement($parametro);
-$xml = simplexml_load_string($parametro);
-foreach ($xml as $guia){
-    echo 'Guia: '.$guia->consecutivo.'<br>';
-}*/
-$parametro = $_POST['parametro'];
-$result = $cliente->call("getCrearGuia",
-    array("parametro" => $parametro));
+$tipo = $_POST['tipo'];
+if($tipo == "guia") {
+    $result = $cliente->call("getCrearGuia",
+        array("parametro" => $parametro));
+}
+if($tipo == "recogida") {
+    $result = $cliente->call("getCrearRecogida",
+        array("parametro" => $parametro));
+}
+
 
 if ($cliente->fault) {
     echo "<h2>Fault</h2><pre>";
