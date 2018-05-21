@@ -15,9 +15,10 @@ if ($mysqli->connect_errno) {
 $consulta = "SELECT Guia, Unidades, KilosReales, KilosFacturados, KilosVolumen, VrDeclarado, VrFlete, VrManejo, Recaudo,
               Abonos, t.CodigoInterface AS codigoCliente, IdCiuOrigen, IdCiuDestino, DocCliente, Remitente, NmDestinatario,
               DirDestinatario, TelDestinatario, FhEntradaBodega, FhDespacho, FhEntregaMercancia, FhDescargada, GuiaTipo, 
-              TpServicio, Estado, Entregada, Descargada, Relacionada, IdFactura, Anulada, Observaciones  
+              TpServicio, Estado, Entregada, Descargada, Relacionada, IdFactura, Anulada, Observaciones, IdDespacho,
+              IdRuta, Orden  
             FROM guias
-            LEFT JOIN terceros AS t ON guias.Cuenta = t.IDTercero WHERE t.CodigoInterface IS NOT NULL AND Guia > 1838047467
+            LEFT JOIN terceros AS t ON guias.Cuenta = t.IDTercero WHERE t.CodigoInterface IS NOT NULL AND Guia > 0
             ORDER BY Guia ASC LIMIT 300000";
 $resultado = mysqli_query($conexion, $consulta) or die("Algo ha ido mal en la consulta a la base de datos");
 echo "Numero filas: " . $resultado->num_rows . "<br/>";
@@ -29,7 +30,7 @@ $strInsertarEstructura = "INSERT INTO tte_guia (numero, unidades, peso_real, pes
                                     documento_cliente, Remitente, nombre_destinatario, direccion_destinatario, telefono_destinatario, fecha_ingreso, fecha_despacho, 
                                     fecha_entrega, fecha_cumplido, fecha_soporte, codigo_guia_tipo_fk, codigo_servicio_fk, estado_impreso, estado_embarcado, 
                                     estado_despachado, estado_entregado, estado_soporte, estado_cumplido, estado_facturado, estado_factura_generada, estado_anulado,
-                                    comentario, factura, codigo_empaque_fk
+                                    comentario, factura, codigo_empaque_fk, codigo_ruta_fk, orden_ruta 
                                     ) 
                         VALUES ";
 $sqlInsertar .= $strInsertarEstructura;
@@ -112,7 +113,7 @@ while ($columna = mysqli_fetch_array( $resultado )) {
                         ,'". $columna['FhDespacho'] . "','". $columna['FhEntregaMercancia'] . "','". $columna['FhDescargada'] . "','". $columna['FhDescargada'] . "'
                         , '$tipo', '$servicio', $estadoImpreso, $estadoEmbarcadoDespachado, $estadoEmbarcadoDespachado, " . $columna['Entregada'] . ", " . $columna['Descargada'] . "
                         , " . $columna['Relacionada'] . ", $estadoFacturado, $estadoFacturado, " . $columna['Anulada'] . ", '" . utf8_decode($columna['Observaciones']) . "', $factura
-                        , 'VARIOS')";
+                        , 'VARIOS', " . $columna['IdRuta'] . ", " . $columna['Orden'] . ")";
     $contador++;
     $contadorGeneral++;
     if($contador == 5000) {
