@@ -17,10 +17,22 @@ $consulta = "SELECT Guia, Unidades, KilosReales, KilosFacturados, KilosVolumen, 
               DirDestinatario, TelDestinatario, FhEntradaBodega, FhDespacho, FhEntregaMercancia, FhDescargada, GuiaTipo, 
               TpServicio, Estado, Entregada, Descargada, Relacionada, IdFactura, Anulada, Observaciones  
             FROM guias
-            LEFT JOIN terceros AS t ON guias.Cuenta = t.IDTercero WHERE t.CodigoInterface IS NOT NULL AND Guia > 10181317
-            ORDER BY Guia ASC LIMIT 300000";
+            LEFT JOIN terceros AS t ON guias.Cuenta = t.IDTercero WHERE t.CodigoInterface IS NOT NULL AND Guia > 0
+            ORDER BY Guia ASC LIMIT 200000";
 $resultado = mysqli_query($conexion, $consulta) or die("Algo ha ido mal en la consulta a la base de datos");
-$arrGuias = array();    
+echo "Numero filas: " . $resultado->num_rows . "<br/>";
+$arrGuias = array();
+$contador = 0;
+$contadorGeneral = 0;
+$strInsertarEstructura = "INSERT INTO tte_guia (numero, unidades, peso_real, peso_facturado, peso_volumen, vr_declara, vr_flete, vr_manejo, vr_recaudo, vr_abono,
+                                    codigo_operacion_ingreso_fk, codigo_operacion_cargo_fk, codigo_cliente_fk, codigo_ciudad_origen_fk, codigo_ciudad_destino_fk,
+                                    documento_cliente, Remitente, nombre_destinatario, direccion_destinatario, telefono_destinatario, fecha_ingreso, fecha_despacho, 
+                                    fecha_entrega, fecha_cumplido, fecha_soporte, codigo_guia_tipo_fk, codigo_servicio_fk, estado_impreso, estado_embarcado, 
+                                    estado_despachado, estado_entregado, estado_soporte, estado_cumplido, estado_facturado, estado_factura_generada, estado_anulado,
+                                    comentario, factura, codigo_empaque_fk
+                                    ) 
+                        VALUES ";
+$sqlInsertar .= $strInsertarEstructura;
 while ($columna = mysqli_fetch_array( $resultado )) {
     //echo $columna['guia'] . "<br />";
     if($columna['FhDespacho'] == '') {
@@ -87,24 +99,49 @@ while ($columna = mysqli_fetch_array( $resultado )) {
     if($columna['IdFactura'] != '') {
         $estadoFacturado = 1;
     }
-    $strInsertarGuia = "INSERT INTO tte_guia (numero, unidades, peso_real, peso_facturado, peso_volumen, vr_declara, vr_flete, vr_manejo, vr_recaudo, vr_abono,
-                                    codigo_operacion_ingreso_fk, codigo_operacion_cargo_fk, codigo_cliente_fk, codigo_ciudad_origen_fk, codigo_ciudad_destino_fk,
-                                    documento_cliente, Remitente, nombre_destinatario, direccion_destinatario, telefono_destinatario, fecha_ingreso, fecha_despacho, 
-                                    fecha_entrega, fecha_cumplido, fecha_soporte, codigo_guia_tipo_fk, codigo_servicio_fk, estado_impreso, estado_embarcado, 
-                                    estado_despachado, estado_entregado, estado_soporte, estado_cumplido, estado_facturado, estado_factura_generada, estado_anulado,
-                                    comentario, factura, codigo_empaque_fk
-                                    ) 
-                        VALUES(". $columna['Guia'] . ",". $columna['Unidades'] . ",". $columna['KilosReales'] . ",". $columna['KilosFacturados'] . ",". $columna['KilosVolumen'] . "
+    $destinatario = preg_replace('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u','', utf8_decode($columna['NmDestinatario']));
+    $direccionDestinatario = preg_replace('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u','', utf8_decode($columna['DirDestinatario']));
+    $telefonoDestinatario = preg_replace('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u','', utf8_decode($columna['TelDestinatario']));
+    $remitente = preg_replace('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u','', utf8_decode($columna['Remitente']));
+    $documento = preg_replace('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u','', utf8_decode($columna['DocCliente']));
+
+    $sqlInsertar .= "(". $columna['Guia'] . ",". $columna['Unidades'] . ",". $columna['KilosReales'] . ",". $columna['KilosFacturados'] . ",". $columna['KilosVolumen'] . "
                         ,". $columna['VrDeclarado'] . ",". $columna['VrFlete'] . ",". $columna['VrManejo'] . ",". $columna['Recaudo'] . ",". $columna['Abonos'] . ", 'MED', 'MED'
-                        ,". $columna['codigoCliente'] . ",". $columna['IdCiuOrigen'] . ",". $columna['IdCiuDestino'] . ",'". utf8_decode($columna['DocCliente']) . "','". utf8_decode($columna['Remitente']) . "'
-                        ,'". utf8_decode($columna['NmDestinatario']) . "','". utf8_decode($columna['DirDestinatario']) . "','". $columna['TelDestinatario'] . "','". $columna['FhEntradaBodega'] . "'
+                        ,". $columna['codigoCliente'] . ",". $columna['IdCiuOrigen'] . ",". $columna['IdCiuDestino'] . ",'". $documento . "','". $remitente . "'
+                        ,'". $destinatario . "','". $direccionDestinatario . "','". $telefonoDestinatario . "','". $columna['FhEntradaBodega'] . "'
                         ,'". $columna['FhDespacho'] . "','". $columna['FhEntregaMercancia'] . "','". $columna['FhDescargada'] . "','". $columna['FhDescargada'] . "'
                         , '$tipo', '$servicio', $estadoImpreso, $estadoEmbarcadoDespachado, $estadoEmbarcadoDespachado, " . $columna['Entregada'] . ", " . $columna['Descargada'] . "
                         , " . $columna['Relacionada'] . ", $estadoFacturado, $estadoFacturado, " . $columna['Anulada'] . ", '" . utf8_decode($columna['Observaciones']) . "', $factura
                         , 'VARIOS')";
-    if (!$mysqli->query($strInsertarGuia)) {
-        echo "Fallo al insertar: (" . $mysqli->errno . ") " . $mysqli->error . " " . $strInsertarGuia;
-        break;
+    $contador++;
+    $contadorGeneral++;
+    if($contador == 5000) {
+        if (!$mysqli->multi_query($sqlInsertar)) {
+            echo "Fallo al insertar: (" . $mysqli->errno . ") " . $mysqli->error . " " . $sqlInsertar;
+        } else {
+            echo "Exitoso " . "<br/>";
+            $mysqli->close();
+            $mysqli = new mysqli("localhost", "root", "70143086", "bdlogicuartas");
+
+            $sqlInsertar = $strInsertarEstructura;
+            $contador = 0;
+        }
+    } else {
+        if($contadorGeneral != $resultado->num_rows) {
+            $sqlInsertar .= ",";
+        }
     }
     //$bdDestino->close();
 }
+if($contador != 0) {
+    if (!$mysqli->multi_query($sqlInsertar)) {
+        echo "Fallo al insertar: (" . $mysqli->errno . ") " . $mysqli->error . " " . $sqlInsertar;
+    } else {
+        echo "Exitoso " . "<br/>";
+        $mysqli->close();
+    }
+}
+
+
+
+
