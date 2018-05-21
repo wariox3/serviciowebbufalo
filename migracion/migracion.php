@@ -17,8 +17,8 @@ $consulta = "SELECT Guia, Unidades, KilosReales, KilosFacturados, KilosVolumen, 
               DirDestinatario, TelDestinatario, FhEntradaBodega, FhDespacho, FhEntregaMercancia, FhDescargada, GuiaTipo, 
               TpServicio, Estado, Entregada, Descargada, Relacionada, IdFactura, Anulada, Observaciones  
             FROM guias
-            LEFT JOIN terceros AS t ON guias.Cuenta = t.IDTercero WHERE t.CodigoInterface IS NOT NULL AND Guia > 0
-            ORDER BY Guia ASC LIMIT 200000";
+            LEFT JOIN terceros AS t ON guias.Cuenta = t.IDTercero WHERE t.CodigoInterface IS NOT NULL AND Guia > 1838047467
+            ORDER BY Guia ASC LIMIT 300000";
 $resultado = mysqli_query($conexion, $consulta) or die("Algo ha ido mal en la consulta a la base de datos");
 echo "Numero filas: " . $resultado->num_rows . "<br/>";
 $arrGuias = array();
