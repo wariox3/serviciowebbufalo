@@ -3,10 +3,11 @@
 set_time_limit(0);
 ini_set("memory_limit", -1);
 
-$conexion = mysqli_connect("192.168.1.162", "root", "70143086") or die("No se ha podido conectar al servidor de Base de datos");
+//$conexion = mysqli_connect("192.168.1.162", "root", "70143086") or die("No se ha podido conectar al servidor de Base de datos");
+$conexion = mysqli_connect("190.85.62.78", "root", "70143086") or die("No se ha podido conectar al servidor de Base de datos");
 $bdOrigen = mysqli_select_db($conexion, "bdkl") or die("Upps! Pues va a ser que no se ha podido conectar a la base de datos");
-
-$mysqli = new mysqli("192.168.1.200", "administrador", "Nor4m628", "bdlogicuartas");
+//$mysqli = new mysqli("192.168.1.200", "administrador", "Nor4m628", "bdlogicuartas");
+$mysqli = new mysqli("localhost", "root", "70143086", "bdlogicuartas");
 if ($mysqli->connect_errno) {
     echo "Falló la conexión con MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error;
 }
@@ -25,7 +26,7 @@ echo "Numero filas: " . $resultado->num_rows . "<br/>";
 $arrGuias = array();
 $contador = 0;
 $contadorGeneral = 0;
-$strInsertarEstructura = "INSERT INTO tte_guia (numero, unidades, peso_real, peso_facturado, peso_volumen, vr_declara, vr_flete, vr_manejo, vr_recaudo, vr_abono,
+$strInsertarEstructura = "INSERT INTO tte_guia (codigo_guia_pk, numero, unidades, peso_real, peso_facturado, peso_volumen, vr_declara, vr_flete, vr_manejo, vr_recaudo, vr_abono,
                                     codigo_operacion_ingreso_fk, codigo_operacion_cargo_fk, codigo_cliente_fk, codigo_ciudad_origen_fk, codigo_ciudad_destino_fk,
                                     documento_cliente, Remitente, nombre_destinatario, direccion_destinatario, telefono_destinatario, fecha_ingreso, fecha_despacho, 
                                     fecha_entrega, fecha_cumplido, fecha_soporte, codigo_guia_tipo_fk, codigo_servicio_fk, estado_impreso, estado_embarcado, 
@@ -110,7 +111,7 @@ while ($columna = mysqli_fetch_array( $resultado )) {
     $remitente = preg_replace('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u','', utf8_decode($columna['Remitente']));
     $documento = preg_replace('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u','', utf8_decode($columna['DocCliente']));
 
-    $sqlInsertar .= "(". $columna['Guia'] . ",". $columna['Unidades'] . ",". $columna['KilosReales'] . ",". $columna['KilosFacturados'] . ",". $columna['KilosVolumen'] . "
+    $sqlInsertar .= "(". $columna['Guia'] . ",". $columna['Guia'] . ",". $columna['Unidades'] . ",". $columna['KilosReales'] . ",". $columna['KilosFacturados'] . ",". $columna['KilosVolumen'] . "
                         ,". $columna['VrDeclarado'] . ",". $columna['VrFlete'] . ",". $columna['VrManejo'] . ",". $columna['Recaudo'] . ",". $columna['Abonos'] . ", 'MED', 'MED'
                         ,". $columna['codigoCliente'] . ",". $columna['IdCiuOrigen'] . ",". $columna['IdCiuDestino'] . ",'". $documento . "','". $remitente . "'
                         ,'". $destinatario . "','". $direccionDestinatario . "','". $telefonoDestinatario . "','". $columna['FhEntradaBodega'] . "'
@@ -126,7 +127,8 @@ while ($columna = mysqli_fetch_array( $resultado )) {
         } else {
             echo "Exitoso " . "<br/>";
             $mysqli->close();
-            $mysqli = new mysqli("192.168.1.200", "administrador", "Nor4m628", "bdlogicuartas");
+            //$mysqli = new mysqli("192.168.1.200", "administrador", "Nor4m628", "bdlogicuartas");
+            $mysqli = new mysqli("localhost", "root", "70143086", "bdlogicuartas");
 
             $sqlInsertar = $strInsertarEstructura;
             $contador = 0;
