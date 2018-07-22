@@ -31,7 +31,7 @@ $strInsertarEstructura = "INSERT INTO tte_guia (codigo_guia_pk, numero, unidades
                                     documento_cliente, Remitente, nombre_destinatario, direccion_destinatario, telefono_destinatario, fecha_ingreso, fecha_despacho, 
                                     fecha_entrega, fecha_cumplido, fecha_soporte, codigo_guia_tipo_fk, codigo_servicio_fk, estado_impreso, estado_embarcado, 
                                     estado_despachado, estado_entregado, estado_soporte, estado_cumplido, estado_facturado, estado_factura_generada, estado_anulado,
-                                    comentario, factura, codigo_empaque_fk, codigo_ruta_fk, orden_ruta, codigo_condicion_fk, codigo_despacho_fk 
+                                    comentario, factura, codigo_empaque_fk, codigo_ruta_fk, orden_ruta, codigo_condicion_fk, codigo_despacho_fk, codigo_factura_fk 
                                     ) 
                         VALUES ";
 $sqlInsertar .= $strInsertarEstructura;
@@ -105,6 +105,11 @@ while ($columna = mysqli_fetch_array( $resultado )) {
     if($columna['IdDespacho']) {
         $codigoDespacho = $columna['IdDespacho'];
     }
+    $codigoFactura = 0;
+    if($columna['IdFactura']) {
+        $codigoFactura = $columna['IdFactura'];
+    }
+
     $destinatario = preg_replace('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u','', utf8_decode($columna['NmDestinatario']));
     $direccionDestinatario = preg_replace('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u','', utf8_decode($columna['DirDestinatario']));
     $telefonoDestinatario = preg_replace('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u','', utf8_decode($columna['TelDestinatario']));
@@ -118,7 +123,7 @@ while ($columna = mysqli_fetch_array( $resultado )) {
                         ,'". $columna['FhDespacho'] . "','". $columna['FhEntregaMercancia'] . "','". $columna['FhDescargada'] . "','". $columna['FhDescargada'] . "'
                         , '$tipo', '$servicio', $estadoImpreso, $estadoEmbarcadoDespachado, $estadoEmbarcadoDespachado, " . $columna['Entregada'] . ", " . $columna['Descargada'] . "
                         , " . $columna['Relacionada'] . ", $estadoFacturado, $estadoFacturado, " . $columna['Anulada'] . ", '" . utf8_decode($columna['Observaciones']) . "', $factura
-                        , 'VARIOS', " . $columna['IdRuta'] . ", " . $columna['Orden'] . ", " . $columna['IdCliente'] . ", " . $codigoDespacho . ")";
+                        , 'VARIOS', " . $columna['IdRuta'] . ", " . $columna['Orden'] . ", " . $columna['IdCliente'] . ", " . $codigoDespacho . ", " . $codigoFactura . ")";
     $contador++;
     $contadorGeneral++;
     if($contador == 5000) {

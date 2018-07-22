@@ -15,28 +15,35 @@ if ($mysqli->connect_errno) {
 
 // establecer y realizar consulta. guardamos en variable.
 $consulta = "
-SELECT IdManifiesto, OrdDespacho, Tipo, FhExpedicion, FhCumplidos, IdVehiculo, despachos.IdConductor, IdRuta, IdCiudadOrigen, IdCiudadDestino, Estado,
-Remesas, Unidades, KilosReales, KilosVol, FleteCobra, ManejoCobra, FleteCE, ManejoCE, VrFlete, VrAnticipo, VrDctoPapeleria, VrDctoSeguridad,
-VrDctoCargue, VrDctoEstampilla, VrFleteAdicional, VrDctoIndCom, VrDctoRteFte, VrOtrosDctos, SaldoDesp, TotalViaje, CO, Observaciones, TRecaudo,
-VrDeclaradoTotal, ManElectronico, NmConductor, Cerrado, Liquidado, IdUsuario, IdEmpresa, Exportado, LugarPago, FhPagoSaldo, PagoCargue, PagoDescargue,
-Estado1, AbonosCE, FletesNoCancelados, EnviadoMT, EnviadoGuia, TotalCE, FleteContado, ManejoContado, FleteCorriente, ManejoCorriente, FleteCETotal, ManejoCETotal,
-ExportadoContabilidad, conductores.CodigoInterface AS codigoConductor FROM despachos 
-LEFT JOIN conductores ON despachos.IdConductor = conductores.IdConductor WHERE OrdDespacho > 0 ORDER BY OrdDespacho ASC LIMIT 9000000";
+SELECT IdFactura, FhFac, FhVenceFac, facturas.IdCliente, Estado, Notas, TFlete, TManejo, TOtros, DctoComercial, BaseCcial, DctoFinanciero,
+BaseFin, AntesDeDcto, Abonos, TotalFactura, Saldo, NroGuias, NroPlanillas, NroConceptos, facturas.Plazo, facturas.IdFormaPago, codigo_centro_operaciones_fk,
+IdTipoFactura, Exportada, IdEmpresa, ValorEnLetras, CodigoBarras, t.CodigoInterface AS codigoCliente 
+FROM facturas LEFT JOIN terceros AS t ON facturas.IdCliente = t.IDTercero WHERE IdFactura > 0 ORDER BY IdFactura ASC limit 9000000";
+
 $resultado = mysqli_query($conexion, $consulta) or die("Algo ha ido mal en la consulta a la base de datos de consulta");
 echo "Numero filas: " . $resultado->num_rows . "<br/>";
 $contador = 0;
 $contadorGeneral = 0;
-$strInsertarEstructura = "INSERT INTO tte_despacho (codigo_despacho_pk, numero, codigo_operacion_fk, codigo_ciudad_origen_fk, codigo_ciudad_destino_fk,
-codigo_vehiculo_fk, codigo_conductor_fk, codigo_ruta_fk, fecha_registro, fecha_salida, cantidad, unidades, peso_real, peso_volumen, vr_declara, vr_flete_pago, vr_anticipo, 
-estado_autorizado, estado_aprobado, comentario) 
+$strInsertarEstructura = "INSERT INTO tte_factura (codigo_factura_pk, codigo_factura_tipo_fk, codigo_cliente_fk, numero, fecha, fecha_vence, vr_flete, vr_manejo, vr_subtotal, vr_otros,
+vr_total, guias, comentario, plazo_pago, estado_autorizado, estado_aprobado, estado_anulado) 
                         VALUES ";
 $sqlInsertar .= $strInsertarEstructura;
 while ($columna = mysqli_fetch_array($resultado)) {
-    //echo $columna['OrdDespacho'] . "<br />";
-    $sqlInsertar .= "(". $columna['OrdDespacho'] . ",". $columna['IdManifiesto'] . ", 'MED', '" . $columna['IdCiudadOrigen'] . "', '" . $columna['IdCiudadDestino'] . "', 
-    '" . $columna['IdVehiculo'] . "', " . $columna['codigoConductor'] . ", '" . $columna['IdRuta'] . "','". $columna['FhExpedicion'] . "','". $columna['FhExpedicion'] . "',". $columna['Remesas'] . ",
-    " . $columna['Unidades'] . ", " . $columna['KilosReales'] . ", " . $columna['KilosVol'] . ", " . $columna['VrDeclaradoTotal'] . ", " . $columna['VrFlete'] . ", 
-    " . $columna['VrAnticipo'] . ", 1, 1, '" .  utf8_decode($columna['Observaciones']) . "')";
+    $estadoAprobado = 0;
+    if($columna['Estado'] == 'I') {
+        $estadoAprobado = 1;
+    }
+    $estadoAnulado = 0;
+    if($columna['Estado'] == 'A') {
+        $estadoAnulado = 1;
+    }
+    $estadoAutorizado = 0;
+    if($columna['Estado'] != 'D') {
+        $estadoAutorizado = 1;
+    }
+
+    $sqlInsertar .= "(" . $columna['IdFactura'] . ",'COR',". $columna['codigoCliente'] . ", " . $columna['IdFactura'] . ", '" . $columna['FhFac'] . "', '" . $columna['FhVenceFac'] . "', 
+    " . $columna['TFlete'] . ", " . $columna['TManejo'] . ", " . $columna['TOtros'] . ", 0, 0, 0, '" . $columna['Notas'] . "',". $columna['Plazo'] . ", $estadoAutorizado, $estadoAprobado, $estadoAnulado)";
     $contador++;
     $contadorGeneral++;
     if($contador == 5000) {
