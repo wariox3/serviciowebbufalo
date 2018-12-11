@@ -2,8 +2,8 @@
 
 set_time_limit(0);
 ini_set("memory_limit", -1);
-
-$conexion = mysqli_connect("181.49.169.98", "root", "70143086") or die("No se ha podido conectar al servidor de Base de datos");
+//$conexion = mysqli_connect("181.49.169.98", "root", "70143086") or die("No se ha podido conectar al servidor de Base de datos");
+$conexion = mysqli_connect("localhost", "root", "70143086") or die("No se ha podido conectar al servidor de Base de datos");
 $bdOrigen = mysqli_select_db($conexion, "bdkl") or die("Upps! Pues va a ser que no se ha podido conectar a la base de datos");
 $mysqli = new mysqli("localhost", "root", "70143086", "bdcotrascal");
 if ($mysqli->connect_errno) {
@@ -18,7 +18,7 @@ VrDctoCargue, VrDctoEstampilla, VrFleteAdicional, VrDctoIndCom, VrDctoRteFte, Vr
 VrDeclaradoTotal, ManElectronico, NmConductor, Cerrado, Liquidado, IdUsuario, IdEmpresa, Exportado, LugarPago, FhPagoSaldo, PagoCargue, PagoDescargue,
 Estado1, AbonosCE, FletesNoCancelados, EnviadoMT, EnviadoGuia, TotalCE, FleteContado, ManejoContado, FleteCorriente, ManejoCorriente, FleteCETotal, ManejoCETotal,
 ExportadoContabilidad, conductores.CodigoInterface AS codigoConductor FROM despachos 
-LEFT JOIN conductores ON despachos.IdConductor = conductores.IdConductor WHERE OrdDespacho > 0 ORDER BY OrdDespacho ASC LIMIT 10";
+LEFT JOIN conductores ON despachos.IdConductor = conductores.IdConductor WHERE OrdDespacho > 0 ORDER BY OrdDespacho ASC LIMIT 100000";
 $resultado = mysqli_query($conexion, $consulta) or die("Algo ha ido mal en la consulta a la base de datos de consulta");
 echo "Numero filas: " . $resultado->num_rows . "<br/>";
 $contador = 0;
@@ -30,10 +30,11 @@ estado_autorizado, estado_aprobado, comentario)
 $sqlInsertar .= $strInsertarEstructura;
 while ($columna = mysqli_fetch_array($resultado)) {
     //echo $columna['OrdDespacho'] . "<br />";
+    $comentarios = preg_replace('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u','', utf8_decode($columna['Observaciones']));
     $sqlInsertar .= "(". $columna['OrdDespacho'] . ",". $columna['IdManifiesto'] . ", 'MED', '" . $columna['IdCiudadOrigen'] . "', '" . $columna['IdCiudadDestino'] . "', 
     '" . $columna['IdVehiculo'] . "', " . $columna['codigoConductor'] . ", '" . $columna['IdRuta'] . "','". $columna['FhExpedicion'] . "','". $columna['FhExpedicion'] . "',". $columna['Remesas'] . ",
     " . $columna['Unidades'] . ", " . $columna['KilosReales'] . ", " . $columna['KilosVol'] . ", " . $columna['VrDeclaradoTotal'] . ", " . $columna['VrFlete'] . ", 
-    " . $columna['VrAnticipo'] . ", 1, 1, '" .  utf8_decode($columna['Observaciones']) . "')";
+    " . $columna['VrAnticipo'] . ", 1, 1, '" .  $comentarios . "')";
     $contador++;
     $contadorGeneral++;
     if($contador == 5000) {

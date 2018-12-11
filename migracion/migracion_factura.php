@@ -3,12 +3,10 @@
 set_time_limit(0);
 ini_set("memory_limit", -1);
 
-$conexion = mysqli_connect("192.168.1.161", "root", "70143086") or die("No se ha podido conectar al servidor de Base de datos");
-//$conexion = mysqli_connect("190.85.62.78", "root", "70143086") or die("No se ha podido conectar al servidor de Base de datos");
+//$conexion = mysqli_connect("181.49.169.98", "root", "70143086") or die("No se ha podido conectar al servidor de Base de datos");
+$conexion = mysqli_connect("localhost", "root", "70143086") or die("No se ha podido conectar al servidor de Base de datos");
 $bdOrigen = mysqli_select_db($conexion, "bdkl") or die("Upps! Pues va a ser que no se ha podido conectar a la base de datos");
-
-$mysqli = new mysqli("192.168.1.200", "administrador", "Nor4m628", "bdlogicuartas");
-//$mysqli = new mysqli("localhost", "root", "70143086", "bdlogicuartas");
+$mysqli = new mysqli("localhost", "root", "70143086", "bdcotrascal");
 if ($mysqli->connect_errno) {
     echo "Falló la conexión con MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error;
 }
@@ -17,8 +15,8 @@ if ($mysqli->connect_errno) {
 $consulta = "
 SELECT IdFactura, FhFac, FhVenceFac, facturas.IdCliente, Estado, Notas, TFlete, TManejo, TOtros, DctoComercial, BaseCcial, DctoFinanciero,
 BaseFin, AntesDeDcto, Abonos, TotalFactura, Saldo, NroGuias, NroPlanillas, NroConceptos, facturas.Plazo, facturas.IdFormaPago, codigo_centro_operaciones_fk,
-IdTipoFactura, Exportada, IdEmpresa, ValorEnLetras, CodigoBarras, t.CodigoInterface AS codigoCliente 
-FROM facturas LEFT JOIN terceros AS t ON facturas.IdCliente = t.IDTercero WHERE IdFactura > 0 ORDER BY IdFactura ASC limit 9000000";
+IdTipoFactura, Exportada, IdEmpresa, ValorEnLetras, t.CodigoInterface AS codigoCliente 
+FROM facturas LEFT JOIN terceros AS t ON facturas.IdCliente = t.IDTercero WHERE IdFactura > 0 ORDER BY IdFactura ASC limit 100000";
 
 $resultado = mysqli_query($conexion, $consulta) or die("Algo ha ido mal en la consulta a la base de datos de consulta");
 echo "Numero filas: " . $resultado->num_rows . "<br/>";
@@ -41,9 +39,9 @@ while ($columna = mysqli_fetch_array($resultado)) {
     if($columna['Estado'] != 'D') {
         $estadoAutorizado = 1;
     }
-
+    $comentarios = preg_replace('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u','', utf8_decode($columna['Notas']));
     $sqlInsertar .= "(" . $columna['IdFactura'] . ",'COR',". $columna['codigoCliente'] . ", " . $columna['IdFactura'] . ", '" . $columna['FhFac'] . "', '" . $columna['FhVenceFac'] . "', 
-    " . $columna['TFlete'] . ", " . $columna['TManejo'] . ", " . $columna['TOtros'] . ", 0, 0, 0, '" . $columna['Notas'] . "',". $columna['Plazo'] . ", $estadoAutorizado, $estadoAprobado, $estadoAnulado)";
+    " . $columna['TFlete'] . ", " . $columna['TManejo'] . ", " . $columna['TOtros'] . ", 0, 0, 0, '" . $comentarios . "',". $columna['Plazo'] . ", $estadoAutorizado, $estadoAprobado, $estadoAnulado)";
     $contador++;
     $contadorGeneral++;
     if($contador == 5000) {
@@ -52,8 +50,7 @@ while ($columna = mysqli_fetch_array($resultado)) {
         } else {
             echo "Exitoso " . "<br/>";
             $mysqli->close();
-            $mysqli = new mysqli("192.168.1.200", "administrador", "Nor4m628", "bdlogicuartas");
-            //$mysqli = new mysqli("localhost", "root", "70143086", "bdlogicuartas");
+            $mysqli = new mysqli("localhost", "root", "70143086", "bdcotrascal");
             $sqlInsertar = $strInsertarEstructura;
             $contador = 0;
         }

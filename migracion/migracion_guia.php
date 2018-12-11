@@ -4,7 +4,8 @@ set_time_limit(0);
 ini_set("memory_limit", -1);
 
 //$conexion = mysqli_connect("192.168.1.161", "root", "70143086") or die("No se ha podido conectar al servidor de Base de datos");
-$conexion = mysqli_connect("181.49.169.98", "root", "70143086") or die("No se ha podido conectar al servidor de Base de datos");
+$conexion = mysqli_connect("localhost", "root", "70143086") or die("No se ha podido conectar al servidor de Base de datos");
+//$conexion = mysqli_connect("181.49.169.98", "root", "70143086") or die("No se ha podido conectar al servidor de Base de datos");
 $bdOrigen = mysqli_select_db($conexion, "bdkl") or die("Upps! Pues va a ser que no se ha podido conectar a la base de datos");
 //$mysqli = new mysqli("192.168.1.200", "administrador", "Nor4m628", "bdlogicuartas");
 $mysqli = new mysqli("localhost", "root", "70143086", "bdcotrascal");
@@ -19,8 +20,8 @@ $consulta = "SELECT Guia, Unidades, KilosReales, KilosFacturados, KilosVolumen, 
               TpServicio, Estado, Entregada, Descargada, Relacionada, IdFactura, Anulada, Observaciones, IdDespacho,
               IdRuta, Orden, guias.IdCliente, IdDespacho, IdRelEntrega 
             FROM guias
-            LEFT JOIN terceros AS t ON guias.Cuenta = t.IDTercero WHERE t.CodigoInterface IS NOT NULL AND Guia > 0
-            ORDER BY Guia ASC LIMIT 10";
+            LEFT JOIN terceros AS t ON guias.Cuenta = t.IDTercero WHERE t.CodigoInterface IS NOT NULL AND Guia > 0 
+            ORDER BY Guia ASC LIMIT 1200000";
 $resultado = mysqli_query($conexion, $consulta) or die("Algo ha ido mal en la consulta a la base de datos de consulta");
 echo "Numero filas: " . $resultado->num_rows . "<br/>";
 $arrGuias = array();
@@ -102,16 +103,16 @@ while ($columna = mysqli_fetch_array( $resultado )) {
     if($columna['IdFactura'] != '') {
         $estadoFacturado = 1;
     }
-    $codigoDespacho = 0;
-    if($columna['IdDespacho']) {
+    $codigoDespacho = "NULL";
+    if($columna['IdDespacho'] && $columna['IdDespacho'] != 0) {
         $codigoDespacho = $columna['IdDespacho'];
     }
-    $codigoFactura = 0;
-    if($columna['IdFactura']) {
+    $codigoFactura = "NULL";
+    if($columna['IdFactura'] && $columna['IdFactura'] != 0) {
         $codigoFactura = $columna['IdFactura'];
     }
-    $codigoCumplido = 0;
-    if($columna['IdRelEntrega']) {
+    $codigoCumplido = "NULL";
+    if($columna['IdRelEntrega'] && $columna['IdRelEntrega'] != 0) {
         $codigoCumplido = $columna['IdRelEntrega'];
     }
     $destinatario = preg_replace('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u','', utf8_decode($columna['NmDestinatario']));
@@ -119,21 +120,22 @@ while ($columna = mysqli_fetch_array( $resultado )) {
     $telefonoDestinatario = preg_replace('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u','', utf8_decode($columna['TelDestinatario']));
     $remitente = preg_replace('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u','', utf8_decode($columna['Remitente']));
     $documento = preg_replace('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u','', utf8_decode($columna['DocCliente']));
-
+    $comentario = preg_replace('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u','', utf8_decode($columna['Observaciones']));
     $sqlInsertar .= "(". $columna['Guia'] . ",". $columna['Guia'] . ",". $columna['Unidades'] . ",". $columna['KilosReales'] . ",". $columna['KilosFacturados'] . ",". $columna['KilosVolumen'] . "
-                        ,". $columna['VrDeclarado'] . ",". $columna['VrFlete'] . ",". $columna['VrManejo'] . ",". $columna['Recaudo'] . ",". $columna['Abonos'] . ", 'MED', 'MED'
+                        ,". $columna['VrDeclarado'] . ",". $columna['VrFlete'] . ",". $columna['VrManejo'] . ",". $columna['Recaudo'] . ",". $columna['Abonos'] . ",'MED','MED'
                         ,". $columna['codigoCliente'] . ",". $columna['IdCiuOrigen'] . ",". $columna['IdCiuDestino'] . ",'". $documento . "','". $remitente . "'
                         ,'". $destinatario . "','". $direccionDestinatario . "','". $telefonoDestinatario . "','". $columna['FhEntradaBodega'] . "'
                         ,'". $columna['FhDespacho'] . "','". $columna['FhEntregaMercancia'] . "','". $columna['FhDescargada'] . "','". $columna['FhDescargada'] . "'
-                        , '$tipo', '$servicio', $estadoImpreso, $estadoEmbarcadoDespachado, $estadoEmbarcadoDespachado, " . $columna['Entregada'] . ", " . $columna['Descargada'] . "
-                        , " . $columna['Relacionada'] . ", $estadoFacturado, $estadoFacturado, " . $columna['Anulada'] . ", '" . utf8_decode($columna['Observaciones']) . "', $factura
-                        , 'VARIOS', " . $columna['IdRuta'] . ", " . $columna['Orden'] . ", " . $columna['IdCliente'] . ", " . $codigoDespacho . ", " . $codigoFactura . ", 
+                        ,'$tipo','$servicio', $estadoImpreso,$estadoEmbarcadoDespachado,$estadoEmbarcadoDespachado," . $columna['Entregada'] . "," . $columna['Descargada'] . "
+                        ," . $columna['Relacionada'] . ",$estadoFacturado,$estadoFacturado," . $columna['Anulada'] . ",'" . $comentario . "',$factura
+                        ,'VAR'," . $columna['IdRuta'] . "," . $columna['Orden'] . "," . $columna['IdCliente'] . "," . $codigoDespacho . "," . $codigoFactura . ",
                         " . $codigoCumplido . ")";
     $contador++;
     $contadorGeneral++;
     if($contador == 5000) {
         if (!$mysqli->multi_query($sqlInsertar)) {
             echo "Fallo al insertar: (" . $mysqli->errno . ") " . $mysqli->error . " " . $sqlInsertar;
+            break;
         } else {
             echo "Exitoso " . "<br/>";
             $mysqli->close();
