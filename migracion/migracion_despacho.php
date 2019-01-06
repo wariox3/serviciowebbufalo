@@ -2,8 +2,7 @@
 
 set_time_limit(0);
 ini_set("memory_limit", -1);
-//$conexion = mysqli_connect("181.49.169.98", "root", "70143086") or die("No se ha podido conectar al servidor de Base de datos");
-$conexion = mysqli_connect("localhost", "root", "70143086") or die("No se ha podido conectar al servidor de Base de datos");
+$conexion = mysqli_connect("192.168.1.104", "root", "70143086") or die("No se ha podido conectar al servidor de Base de datos");
 $bdOrigen = mysqli_select_db($conexion, "bdkl") or die("Upps! Pues va a ser que no se ha podido conectar a la base de datos");
 $mysqli = new mysqli("localhost", "root", "70143086", "bdcotrascal");
 if ($mysqli->connect_errno) {
